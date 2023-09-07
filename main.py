@@ -4,14 +4,15 @@ import re
 
 help = """
 Available commands:
-hello : print \"How can I help you?\"
+hello: print \"How can I help you?\"
 add [name] [phone] [birthday]: Add a new record to address book or new phone to contact phone list
 add birthday [name] [birthday]: Add a new/change Birthday to the contact of address book
 to birthday [name]: Show days to contact`s Birthday
-change [name] [old_phone] [new_phone] : Change phone num for contact in address book
-phone [name] : Show phone list of contact
-show all : Show address book
-good bye, close, exit : print \"Good bye!\" and exit
+change [name] [old_phone] [new_phone]: Change phone num for contact in address book
+phone [name]: Show phone list of contact
+show all: Show address book
+page [size]: Show address book in pages, size is number records per page
+good bye, close, exit: print \"Good bye!\" and exit
 help: Show this help
 """
 
@@ -42,17 +43,21 @@ def input_error(func):
 
         elif func.__name__ == "change":
             if len(param_list) > 2:
-                #new_phone = param_list[2]
                 result = func(param_list)
             else:
                 result = f"""Command \"{func.__name__}\" reqired 3 arguments: name, phone and new_phone.\nFor example: {func.__name__} [name] [phone] [new_phone]\n\nTRY AGAIN!!!"""
         elif func.__name__ == "to_birthday":
             param_list.pop(0)
             if len(param_list) > 0:
-                #name = param_list[0]
                 result = func(param_list)
             else:
                 result = f"""Command \"{func.__name__.replace("_", " ")}\" reqired 1 argument: name.\nFor example: {func.__name__.replace("_", " ")} [name]\n\nTRY AGAIN!!!"""
+        elif func.__name__ == "pages":
+            if len(param_list) > 0 and int(param_list[0]) > 0:
+                result = func(param_list)
+            else:
+                result = f"""Command \"{func.__name__}\" reqired 1 argument: size. Size int and must be > 0.\nFor example: {func.__name__} [size]\n\nTRY AGAIN!!!"""
+
 
         
         return result
@@ -218,6 +223,13 @@ def show_all(param_list):
     return result
 
 
+@input_error
+def pages(param_list):
+    size = int(param_list[0])
+    address_book.get_pages(page_size=size)
+
+
+
 def helper(param_list):
     return help
 
@@ -238,6 +250,7 @@ commands = {
         "to_birthday": to_birthday,
         "help": helper,
         "helper": helper,
+        "pages": pages
     }
 
 
