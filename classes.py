@@ -1,4 +1,5 @@
 from collections import UserDict
+import re
 
 
 class AddressBook(UserDict):
@@ -62,8 +63,9 @@ class AddressBook(UserDict):
 
 class Record:
 
-    def __init__(self, name, phone=None): 
+    def __init__(self, name, phone=None, birthday=None): 
         self.name = name
+        self.birthday = birthday
         self.phones = []
         if phone != None:
             self.phones.append(phone)
@@ -73,6 +75,14 @@ class Record:
 
         self.phones.append(phone)
         result = f'Number {phone.value} added to phone list of {self.name.value}'
+
+        return result
+    
+
+    def add_birthday(self, birthday):
+
+        self.birthday = birthday
+        result = f'Value {birthday.value} added to birthday of {self.name.value}'
 
         return result
 
@@ -105,16 +115,48 @@ class Record:
         return result
 
 class Field:
-    pass
+    
+    def __init__(self, value):
+        self.__value = value
+
+    @property
+    def value(self):
+        return self.__value
+
+    
+    @value.setter
+    def value(self, value):
+        check = self.check_value(value)
+        if check == True:
+            self.__value = value
+        else:
+            raise ValueError(check)
+        
+    
+
 
 
 class Name(Field):
+    def check_value(self, value):
+        return True
     
-    def __init__(self, value):
-        self.value = value
 
 
 class Phone(Field):
+    def check_value(self, value):
+        match = re.fullmatch(r'\+\d{12}', value)
+        if match:
+            result = True
+        else:
+            result =  f"""Entered value \"{value}\" is not correct.\nPhone must start with \"+\" and must have 12 digits.\nFor example: \"+380681235566\"\n\nTRY AGAIN!!!"""
+        return result
     
-    def __init__(self, value):
-        self.value = value
+
+class Birthday(Field):
+    def check_value(self, value):
+        match = re.fullmatch(r'\d{2}\.\d{2}\.\d{4}', value)
+        if match:
+            result = True
+        else:
+            result =  f"""Entered value \"{value}\" is not correct.\nBirthday must have a format: DD.MM.YYYY and contain only numbers\nFor example: \"12.06.1978\"\n\nTRY AGAIN!!!"""
+        return result

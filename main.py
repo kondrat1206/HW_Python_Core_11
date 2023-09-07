@@ -1,11 +1,12 @@
-from classes import AddressBook, Record, Name, Phone
+from classes import AddressBook, Record, Name, Phone, Birthday
 import functools
 import re
 
 help = """
 Available commands:
 hello : print \"How can I help you?\"
-add [name] [phone] : Add a new record to address book or new phone to contact phone list
+add [name] [phone] [birthday]: Add a new record to address book or new phone to contact phone list
+add birthday [name] [birthday]: Add a new birthday to the contact of address book
 change [name] [old_phone] [new_phone] : Change phone num for contact in address book
 phone [name] : Show phone list of contact
 show all : Show address book
@@ -27,21 +28,18 @@ def input_error(func):
                 result = f"""Command \"{func.__name__}\" reqired 1 argument: name.\nFor example: {func.__name__} [name]\n\nTRY AGAIN!!!"""
         elif func.__name__ == "add":
             if len(param_list) > 0:
-                if len(param_list) == 1:
-                    result = func(param_list)
-                elif len(param_list) > 1:
-                    name = param_list[0]
-                    phone = param_list[1]
-                    match = re.fullmatch(r'\+\d{12}', phone)
-                    if match:
-                        result = func(param_list)
-                    else:
-                        result = f"""Entered value \"{phone}\" is not correct.\nPhone must start with \"+\" and must have 12 digits.\nFor example: \"+380681235566\"\n\nTRY AGAIN!!!"""
+                result = func(param_list)
             else:
                 result = f"""Command \"{func.__name__}\" reqired 1 or 2 arguments: name and phone.\nFor example: {func.__name__} [name] - To add a new contact without phones\nFor example: {func.__name__} [name] [phone] - To add a new contact with phones, or add new phone to contact\n\nTRY AGAIN!!!"""
+        elif func.__name__ == "add_birthday":
+            param_list.pop(0)
+            if len(param_list) > 0:
+                result = func(param_list)
+            else:
+                result = f"""Command \"{func.__name__.replace("_", " ")}\" reqired 2 arguments: name and birthday.\nFor example: {func.__name__.replace("_", " ")} [name] [birthday]\n\nTRY AGAIN!!!"""
+
         elif func.__name__ == "change":
             if len(param_list) > 2:
-                name = param_list[0]
                 new_phone = param_list[2]
                 match = re.fullmatch(r'\+\d{12}', new_phone)
                 if match:
@@ -58,15 +56,71 @@ def input_error(func):
 @input_error
 def add(param_list):
 
+    name = Name(None)
+    phone = Phone(None)
+    birthday = Birthday(None)
+
     if len(param_list) == 1:
-        name = Name(param_list[0])
-        phone = None
-    elif len(param_list) > 1:
-        name = Name(param_list[0])
-        phone = Phone(param_list[1])
-    result = address_book.add_record(Record(name, phone))
-        
+        try:
+            name.value = param_list[0]
+        except ValueError as e:
+            result = str(e)
+            return result
+    elif len(param_list) == 2:
+        try:
+            name.value = param_list[0]
+        except ValueError as e:
+            result = str(e)
+            return result
+        try:
+            phone.value = param_list[1]
+        except ValueError as e:
+            result = str(e)
+            return result
+    elif len(param_list) > 2:
+        try:
+            name.value = param_list[0]
+        except ValueError as e:
+            result = str(e)
+            return result
+        try:
+            phone.value = param_list[1]
+        except ValueError as e:
+            result = str(e)
+            return result
+        try:
+            birthday.value = param_list[2]
+        except ValueError as e:
+            result = str(e)
+            return result
+
+    if phone.value != None:    
+        result = address_book.add_record(Record(name, phone=phone, birthday=birthday)) 
+    else:
+        result = address_book.add_record(Record(name, birthday=birthday))
+
     return result
+
+
+@input_error
+def add_birthday(param_list):
+
+    name = Name(None)
+    birthday = Birthday(None)
+    try:
+        name.value = param_list[0]
+    except ValueError as e:
+        result = str(e)
+        return result
+    try:
+        birthday.value = param_list[1]
+    except ValueError as e:
+        result = str(e)
+        return result
+    
+    
+    result = address_book.add_birthday(Record(name, birthday=birthday))
+    
 
 
 @input_error
@@ -81,6 +135,20 @@ def change(param_list):
         result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
     
     return result
+
+
+@input_error
+
+def add_birthday(param_list):
+    record = Record(Name(param_list[0]))
+    birthday = Birthday(param_list[1])
+    if address_book.is_contact_exist(record):
+        result = address_book[param_list[0]].add_birthday(birthday)
+    else:
+        result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
+    
+    return result
+
 
 
 @input_error
@@ -117,10 +185,11 @@ def show_all(param_list):
     result = "All contacts:\n"
     for name, record in address_book.data.items():
         phones = record.phones
+        birthday = record.birthday.value
         phone_values = []
         for phone in phones:
             phone_values.append(phone.value)
-        result += f"Name: \"{name}\", Phones: {phone_values}\n"
+        result += f"Name: \"{name}\", Phones: {phone_values}, Birthday: [{birthday}]\n"
 
     return result
 
@@ -132,6 +201,8 @@ commands = {
         "show all": show_all,
         "show_all": show_all,
         "hello": hello,
+        "add birthday": add_birthday,
+        "add_birthday": add_birthday,
         "add": add,
         "change": change,
         "phone": phone,
