@@ -1,6 +1,5 @@
 from classes import AddressBook, Record, Name, Phone, Birthday
 import functools
-import re
 
 help = """
 Available commands:
@@ -130,7 +129,6 @@ def add_birthday(param_list):
     result = address_book.add_birthday(Record(name, birthday=birthday))
     
 
-
 @input_error
 def change(param_list):
 
@@ -164,7 +162,6 @@ def add_birthday(param_list):
     return result
 
 
-
 @input_error
 def phone(param_list):
 
@@ -192,7 +189,6 @@ def to_birthday(param_list):
         result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
     
     return result
-
 
 
 def hello(param_list):
@@ -229,8 +225,8 @@ def pages(param_list):
     return result
 
 
-
 def helper(param_list):
+    
     return help
 
 

@@ -13,14 +13,19 @@ class AddressBook(UserDict):
 
 
     def set_page_size(self, page_size):
+
         self.page_size = page_size
 
+
     def __iter__(self):
+
         self.current_page = 0
+        
         return self
     
 
     def __next__(self):
+        
         start_idx = self.current_page * self.page_size
         end_idx = (self.current_page + 1) * self.page_size
         items = list(self.data.items())
@@ -29,10 +34,12 @@ class AddressBook(UserDict):
             raise StopIteration
 
         self.current_page += 1
+
         return items[start_idx:end_idx]
     
 
     def get_pages(self, page_size=100):
+
         self.page_size = page_size
         self.set_page_size(self.page_size)
 
@@ -101,6 +108,7 @@ class AddressBook(UserDict):
 class Record:
 
     def __init__(self, name, phone=None, birthday=None): 
+
         self.name = name
         self.birthday = birthday
         self.phones = []
