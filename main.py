@@ -11,7 +11,7 @@ to birthday [name]: Show days to contact`s Birthday
 change [name] [old_phone] [new_phone]: Change phone num for contact in address book
 phone [name]: Show phone list of contact
 show all: Show address book
-page [size]: Show address book in pages, size is number records per page
+pages [size]: Show address book in pages, size is number records per page
 good bye, close, exit: print \"Good bye!\" and exit
 help: Show this help
 """
