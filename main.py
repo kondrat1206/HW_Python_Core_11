@@ -6,11 +6,13 @@ help = """
 Available commands:
 hello : print \"How can I help you?\"
 add [name] [phone] [birthday]: Add a new record to address book or new phone to contact phone list
-add birthday [name] [birthday]: Add a new birthday to the contact of address book
+add birthday [name] [birthday]: Add a new/change Birthday to the contact of address book
+to birthday [name]: Show days to contact`s Birthday
 change [name] [old_phone] [new_phone] : Change phone num for contact in address book
 phone [name] : Show phone list of contact
 show all : Show address book
 good bye, close, exit : print \"Good bye!\" and exit
+help: Show this help
 """
 
 address_book = AddressBook()
@@ -33,21 +35,25 @@ def input_error(func):
                 result = f"""Command \"{func.__name__}\" reqired 1 or 2 arguments: name and phone.\nFor example: {func.__name__} [name] - To add a new contact without phones\nFor example: {func.__name__} [name] [phone] - To add a new contact with phones, or add new phone to contact\n\nTRY AGAIN!!!"""
         elif func.__name__ == "add_birthday":
             param_list.pop(0)
-            if len(param_list) > 0:
+            if len(param_list) > 1:
                 result = func(param_list)
             else:
                 result = f"""Command \"{func.__name__.replace("_", " ")}\" reqired 2 arguments: name and birthday.\nFor example: {func.__name__.replace("_", " ")} [name] [birthday]\n\nTRY AGAIN!!!"""
 
         elif func.__name__ == "change":
             if len(param_list) > 2:
-                new_phone = param_list[2]
-                match = re.fullmatch(r'\+\d{12}', new_phone)
-                if match:
-                    result = func(param_list)
-                else:
-                    result = f"""Entered value \"{new_phone}\" is not correct.\nPhone must start with \"+\" and must have 12 digits.\nFor example: \"+380681235566\"\n\nTRY AGAIN!!!"""
+                #new_phone = param_list[2]
+                result = func(param_list)
             else:
                 result = f"""Command \"{func.__name__}\" reqired 3 arguments: name, phone and new_phone.\nFor example: {func.__name__} [name] [phone] [new_phone]\n\nTRY AGAIN!!!"""
+        elif func.__name__ == "to_birthday":
+            param_list.pop(0)
+            if len(param_list) > 0:
+                #name = param_list[0]
+                result = func(param_list)
+            else:
+                result = f"""Command \"{func.__name__.replace("_", " ")}\" reqired 1 argument: name.\nFor example: {func.__name__.replace("_", " ")} [name]\n\nTRY AGAIN!!!"""
+
         
         return result
     return inner
@@ -118,7 +124,6 @@ def add_birthday(param_list):
         result = str(e)
         return result
     
-    
     result = address_book.add_birthday(Record(name, birthday=birthday))
     
 
@@ -128,7 +133,13 @@ def change(param_list):
 
     record = Record(Name(param_list[0]))
     old_phone_obj = Phone(param_list[1])
-    new_phone_obj = Phone(param_list[2])
+    new_phone_obj = Phone(None)
+    try:
+        new_phone_obj.value = param_list[2]
+    except ValueError as e:
+        result = str(e)
+        return result
+
     if address_book.is_contact_exist(record):
         result = address_book[param_list[0]].change_phone(old_phone_obj, new_phone_obj)
     else:
@@ -138,8 +149,8 @@ def change(param_list):
 
 
 @input_error
-
 def add_birthday(param_list):
+
     record = Record(Name(param_list[0]))
     birthday = Birthday(param_list[1])
     if address_book.is_contact_exist(record):
@@ -168,6 +179,19 @@ def phone(param_list):
     return result
 
 
+@input_error
+def to_birthday(param_list):
+
+    record = Record(Name(param_list[0]))
+    if address_book.is_contact_exist(record):
+        result = address_book[param_list[0]].days_to_birthday()
+    else:
+        result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
+    
+    return result
+
+
+
 def hello(param_list):
 
     result = "How can I help you?\n"
@@ -194,6 +218,10 @@ def show_all(param_list):
     return result
 
 
+def helper(param_list):
+    return help
+
+
 commands = {
         "good bye": exit,
         "close": exit,
@@ -206,6 +234,10 @@ commands = {
         "add": add,
         "change": change,
         "phone": phone,
+        "to birthday": to_birthday,
+        "to_birthday": to_birthday,
+        "help": helper,
+        "helper": helper,
     }
 
 

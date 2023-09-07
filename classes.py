@@ -1,4 +1,5 @@
 from collections import UserDict
+from datetime import datetime, date
 import re
 
 
@@ -34,8 +35,6 @@ class AddressBook(UserDict):
 
         return result
 
-
-        
 
     def add_record(self, record):
 
@@ -74,7 +73,7 @@ class Record:
     def add_phone(self, phone):
 
         self.phones.append(phone)
-        result = f'Number {phone.value} added to phone list of {self.name.value}'
+        result = f'Number \"{phone.value}\" added to phone list of \"{self.name.value}\"\n'
 
         return result
     
@@ -82,7 +81,7 @@ class Record:
     def add_birthday(self, birthday):
 
         self.birthday = birthday
-        result = f'Value {birthday.value} added to birthday of {self.name.value}'
+        result = f'Value \"{birthday.value}\" added to birthday of \"{self.name.value}\"\n'
 
         return result
 
@@ -100,6 +99,7 @@ class Record:
     
 
     def change_phone(self, old_phone, new_phone):
+
         phone_values = []
         for number in self.phones:
             phone_values.append(number.value)
@@ -113,18 +113,41 @@ class Record:
             result = f"Phone \"{old_phone.value}\" does not exist in the phone list of contact \"{self.name.value}\"\n"
                    
         return result
+    
+
+    def days_to_birthday(self):
+
+        if self.birthday.value == None:
+            result = f"Birthday value not set of contact \"{self.name.value}\"\nYou can set the Birthday with command:\nadd birthday {self.name.value} DD.MM.YYYY\n"
+        else:
+            now = date.today()
+            birthday = datetime.strptime(self.birthday.value, "%d.%m.%Y").date()
+            if now.month > birthday.month or (now.month == birthday.month and now.day >= birthday.day):
+                next_birthday = date(now.year + 1, birthday.month, birthday.day)
+            else:
+                next_birthday = date(now.year, birthday.month, birthday.day)
+
+            days = (next_birthday - now).days
+            result = f"To Birthday of contact \"{self.name.value}\" untill \"{days}\" days\n"
+
+        return result
+
+
 
 class Field:
     
     def __init__(self, value):
+
         self.__value = value
 
     @property
     def value(self):
+
         return self.__value
 
     
     @value.setter
+
     def value(self, value):
         check = self.check_value(value)
         if check == True:
@@ -133,30 +156,32 @@ class Field:
             raise ValueError(check)
         
     
-
-
-
 class Name(Field):
+
     def check_value(self, value):
+       
         return True
     
 
-
 class Phone(Field):
+
     def check_value(self, value):
         match = re.fullmatch(r'\+\d{12}', value)
         if match:
             result = True
         else:
             result =  f"""Entered value \"{value}\" is not correct.\nPhone must start with \"+\" and must have 12 digits.\nFor example: \"+380681235566\"\n\nTRY AGAIN!!!"""
+       
         return result
     
 
 class Birthday(Field):
+
     def check_value(self, value):
         match = re.fullmatch(r'\d{2}\.\d{2}\.\d{4}', value)
         if match:
             result = True
         else:
             result =  f"""Entered value \"{value}\" is not correct.\nBirthday must have a format: DD.MM.YYYY and contain only numbers\nFor example: \"12.06.1978\"\n\nTRY AGAIN!!!"""
+        
         return result
