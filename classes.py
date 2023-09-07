@@ -37,10 +37,15 @@ class AddressBook(UserDict):
         self.set_page_size(self.page_size)
 
         for page in self:
-            print(f"__________PAGE_{self.current_page}_________________")
+            phone_list = []
+            print(f"---------------PAGE-{self.current_page}---------------------")
             for el in page:
-                print(f"Name: {el[0]} Data: {el[1]}")
-            print(f"___________END_PAGE_{self.current_page}____________")
+                for i in el[1].phones:
+                    phone_list.append(i.value)
+                print(f"Name: {el[0]} Phones: {phone_list} Birthday: [{el[1].birthday.value}]")
+            print(f"---------------END-PAGE-{self.current_page}-----------------")
+
+        return "Completed"
 
 
     def is_contact_exist(self, record):

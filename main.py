@@ -58,8 +58,6 @@ def input_error(func):
             else:
                 result = f"""Command \"{func.__name__}\" reqired 1 argument: size. Size int and must be > 0.\nFor example: {func.__name__} [size]\n\nTRY AGAIN!!!"""
 
-
-        
         return result
     return inner
     
@@ -226,7 +224,9 @@ def show_all(param_list):
 @input_error
 def pages(param_list):
     size = int(param_list[0])
-    address_book.get_pages(page_size=size)
+    result = address_book.get_pages(page_size=size)
+
+    return result
 
 
 
