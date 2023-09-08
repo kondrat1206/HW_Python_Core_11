@@ -126,8 +126,8 @@ class Record:
 
     def add_birthday(self, birthday):
 
-        self.birthday = birthday
-        result = f'Value \"{birthday.value}\" added to birthday of \"{self.name.value}\"\n'
+        self.birthday.value = birthday.value
+        result = f'Value \"{self.birthday.value}\" added to birthday of \"{self.name.value}\"\n'
 
         return result
 

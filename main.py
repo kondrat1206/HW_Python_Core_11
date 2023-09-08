@@ -115,19 +115,25 @@ def add_birthday(param_list):
 
     name = Name(None)
     birthday = Birthday(None)
-    try:
-        name.value = param_list[0]
-    except ValueError as e:
-        result = str(e)
-        return result
-    try:
-        birthday.value = param_list[1]
-    except ValueError as e:
-        result = str(e)
-        return result
-    
-    result = address_book.add_birthday(Record(name, birthday=birthday))
-    
+    record = Record(Name(param_list[0]))
+    if address_book.is_contact_exist(record):
+        try:
+            name.value = param_list[0]
+        except ValueError as e:
+            result = str(e)
+            return result
+        try:
+            birthday.value = param_list[1]
+        except ValueError as e:
+            result = str(e)
+            return result
+        
+        result = address_book[param_list[0]].add_birthday(birthday)
+    else:
+        result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
+
+    return result
+
 
 @input_error
 def change(param_list):
@@ -149,17 +155,17 @@ def change(param_list):
     return result
 
 
-@input_error
-def add_birthday(param_list):
+# @input_error
+# def add_birthday(param_list):
 
-    record = Record(Name(param_list[0]))
-    birthday = Birthday(param_list[1])
-    if address_book.is_contact_exist(record):
-        result = address_book[param_list[0]].add_birthday(birthday)
-    else:
-        result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
+#     record = Record(Name(param_list[0]))
+#     birthday = Birthday(param_list[1])
+#     if address_book.is_contact_exist(record):
+#         result = address_book[param_list[0]].add_birthday(birthday)
+#     else:
+#         result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
     
-    return result
+#     return result
 
 
 @input_error
