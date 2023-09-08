@@ -230,4 +230,15 @@ class Birthday(Field):
         else:
             result =  f"""Entered value \"{value}\" is not correct.\nBirthday must have a format: DD.MM.YYYY and contain only numbers\nFor example: \"12.06.1978\"\n\nTRY AGAIN!!!"""
         
+        day, month, year = map(int, value.split('.'))
+        try:
+            datetime(year, month, day)
+        except ValueError:
+            result = f"""Entered value \"{value}\" is not correct.\nSetted date is not exist\n\nTRY AGAIN!!!"""
+
+        current_date = datetime.now().date()
+
+        if datetime(year, month, day).date() > current_date:
+            result = f"""Entered value \"{value}\" is not correct.\nSetted date can not be at the future\n\nTRY AGAIN!!!"""
+        
         return result
