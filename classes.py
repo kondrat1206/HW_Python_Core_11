@@ -179,7 +179,6 @@ class Record:
         return result
 
 
-
 class Field:
     
     def __init__(self, value):
@@ -193,7 +192,6 @@ class Field:
 
     
     @value.setter
-
     def value(self, value):
         check = self.check_value(value)
         if check == True:
@@ -224,6 +222,7 @@ class Phone(Field):
 class Birthday(Field):
 
     def check_value(self, value):
+
         match = re.fullmatch(r'\d{2}\.\d{2}\.\d{4}', value)
         if match:
             result = True
@@ -237,7 +236,6 @@ class Birthday(Field):
             result = f"""Entered value \"{value}\" is not correct.\nSetted date is not exist\n\nTRY AGAIN!!!"""
 
         current_date = datetime.now().date()
-
         if datetime(year, month, day).date() > current_date:
             result = f"""Entered value \"{value}\" is not correct.\nSetted date can not be at the future\n\nTRY AGAIN!!!"""
         
