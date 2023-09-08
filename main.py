@@ -155,19 +155,6 @@ def change(param_list):
     return result
 
 
-# @input_error
-# def add_birthday(param_list):
-
-#     record = Record(Name(param_list[0]))
-#     birthday = Birthday(param_list[1])
-#     if address_book.is_contact_exist(record):
-#         result = address_book[param_list[0]].add_birthday(birthday)
-#     else:
-#         result = f"Contact \"{param_list[0]}\" does not exist in the address book\n"
-    
-#     return result
-
-
 @input_error
 def phone(param_list):
 
